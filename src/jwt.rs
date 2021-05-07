@@ -1,5 +1,4 @@
 use hmac_sha256::HMAC;
-use std::str;
 use serde_json::{Value};
 
 extern crate base64;
