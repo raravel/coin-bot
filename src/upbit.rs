@@ -1,14 +1,17 @@
-use serde_json::json;
-use std::time::{SystemTime, UNIX_EPOCH};
-use serde_json::{Value};
+use hmac_sha256::Hash;
+use serde_json::{Value, json};
 
 use hyper_tls::HttpsConnector;
 use hyper::{Client, Request, Method, Body};
 use hyper::client::connect::HttpConnector;
 
+use std::time::{SystemTime, UNIX_EPOCH};
 use std::str;
 
 use super::jwt;
+
+extern crate hex;
+extern crate urlencoding;
 
 type UpbitApiResult = Result<Value, Box<dyn std::error::Error + Send + Sync>>;
 
@@ -41,27 +44,57 @@ impl Upbit {
         return since_the_epoch.as_secs();
     }
 
-    fn token(&self) -> String {
+    fn hash(&self, value: Value) -> String {
+        let mut hash_list = Vec::new();
+        for (key, val) in value.as_object().unwrap() {
+            if val.is_array() {
+                for v in val.as_array().unwrap() {
+                    hash_list.push(format!("{}[]={}", key, urlencoding::encode(v.as_str().unwrap())));
+                }
+            } else {
+                hash_list.push(format!("{}={}", key, urlencoding::encode(val.as_str().unwrap())));
+            }
+        }
+        return hash_list.join("&");
+    }
+
+    fn token(&self, value: Option<Value>) -> String {
+        let mut payload = json!({
+            "access_key": self.access,
+            "nonce": "deviceUUID",
+            "iat": self.now()
+        });
+
+        if value != None {
+            let mut hash = self.hash(value.unwrap());
+            hash = hex::encode(Hash::hash(hash.as_bytes()));
+            payload["query_hash"] = Value::String(hash);
+            payload["query_hash_alg"] = Value::String("SHA256".to_string());
+        }
+
         let jwt = jwt::signin(jwt::header::default(),
-            json!({
-                "access_key": self.access,
-                "nonce": "deviceUUID",
-                "iat": self.now()
-            }), self.secret.to_string());
+            payload, self.secret.to_string());
         return format!("Bearer {}", jwt);
     }
 
-    fn eb(&self) -> Body {
-        return Body::from(r#""#);
-    }
+    async fn request(&self, url: &str, method: Method, value: Option<Value>) -> UpbitApiResult {
+        let mut body = Body::from(r#""#);
+        let mut u = format!("{}{}", self.base, url);
+        let v = value.clone();
 
-    async fn request(&self, url: &str, method: Method, body: Body) -> UpbitApiResult {
-        let u = format!("{}{}", self.base, url);
+        if value != None {
+            if method == Method::GET {
+                u = format!("{}?{}", u, self.hash(v.unwrap()));
+            } else {
+                body = Body::from(v.unwrap().to_string());
+            }
+        }
+
         let req = Request::builder()
                 .method(method)
                 .uri(u)
                 .header("Content-Type", "application/json")
-                .header("Authorization", self.token())
+                .header("Authorization", self.token(value))
                 .body(body)?;
 
         let res = self.client.request(req).await?;
@@ -77,7 +110,17 @@ impl Upbit {
 
     pub async fn accounts(&self) -> UpbitApiResult {
 
-        let _v = self.request("/v1/accounts", Method::GET, self.eb()).await?;
+        let _v = self.request("/v1/accounts", Method::GET, None).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn orders_chance(&self, market: String) -> UpbitApiResult {
+
+        let _d = json!({
+            "market": market,
+        });
+        let _v = self.request("/v1/orders/chance", Method::GET, Some(_d)).await?;
         Ok(_v)
 
     }

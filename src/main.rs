@@ -18,7 +18,8 @@ async fn dummy() {
     let secret_key = &args[2];
 
     let up = Upbit::new(access_key, secret_key);
-    let val = up.accounts().await;
+    //let val = up.accounts().await;
+    let val = up.orders_chance("KRW-BTC".to_string()).await;
 
     println!("{}", val.unwrap().to_string());
 }
