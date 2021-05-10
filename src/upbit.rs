@@ -125,4 +125,134 @@ impl Upbit {
 
     }
 
+    pub async fn order(&self, uuid: String) -> UpbitApiResult {
+
+        let _d = json!({
+            "uuid": uuid,
+        });
+        let _v = self.request("/v1/order", Method::GET, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn orders(&self, uuids: Vec<String>) -> UpbitApiResult {
+
+        let _d = json!({
+            "uuids": uuids,
+        });
+        let _v = self.request("/v1/orders", Method::GET, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn cancel_order(&self, uuid: String) -> UpbitApiResult {
+
+        let _d = json!({
+            "uuid": uuid,
+        });
+        let _v = self.request("/v1/order", Method::DELETE, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn request_order(&self, market: String, side: String, volume: u64, price: u64, ord_type: String) -> UpbitApiResult {
+
+        let _d = json!({
+            "market": market,
+            "side": side,
+            "volume": volume.to_string(),
+            "price": price.to_string(),
+            "ord_type": ord_type,
+        });
+        let _v = self.request("/v1/orders", Method::POST, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn market_list(&self, is_details: bool) -> UpbitApiResult {
+
+        let _d = json!({
+            "isDetails": is_details.to_string(),
+        });
+        let _v = self.request("/v1/market/all", Method::GET, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn candles_minutes(&self, unit: u8, market: String, count: u32) -> UpbitApiResult {
+
+        let _d = json!({
+            "market": market,
+            "count": count.to_string(),
+        });
+        let _u = format!("/v1/candles/minutes/{}", unit);
+        let _v = self.request(&_u.to_owned(), Method::GET, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn candles_days(&self, market: String, count: u32) -> UpbitApiResult {
+
+        let _d = json!({
+            "market": market,
+            "count": count.to_string(),
+        });
+        let _v = self.request("/v1/candles/days", Method::GET, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn candles_weeks(&self, market: String, count: u32) -> UpbitApiResult {
+
+        let _d = json!({
+            "market": market,
+            "count": count.to_string(),
+        });
+        let _v = self.request("/v1/candles/weeks", Method::GET, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn candles_months(&self, market: String, count: u32) -> UpbitApiResult {
+
+        let _d = json!({
+            "market": market,
+            "count": count.to_string(),
+        });
+        let _v = self.request("/v1/candles/months", Method::GET, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn trades(&self, market: String, count: u32) -> UpbitApiResult {
+
+        let _d = json!({
+            "market": market,
+            "count": count.to_string(),
+        });
+        let _v = self.request("/v1/trades/ticks", Method::GET, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn ticker(&self, markets: Vec<String>) -> UpbitApiResult {
+
+        let _d = json!({
+            "markets": markets.join(","),
+        });
+        let _v = self.request("/v1/ticker", Method::GET, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
+    pub async fn orderbook(&self, markets: Vec<String>) -> UpbitApiResult {
+
+        let _d = json!({
+            "markets": markets.join(","),
+        });
+        let _v = self.request("/v1/orderbook", Method::GET, Some(_d)).await?;
+        Ok(_v)
+
+    }
+
 }
