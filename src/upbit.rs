@@ -115,7 +115,7 @@ impl Upbit {
 
     }
 
-    pub async fn orders_chance(&self, market: String) -> UpbitApiResult {
+    pub async fn orders_chance(&self, market: &str) -> UpbitApiResult {
 
         let _d = json!({
             "market": market,
@@ -125,7 +125,7 @@ impl Upbit {
 
     }
 
-    pub async fn order(&self, uuid: String) -> UpbitApiResult {
+    pub async fn order(&self, uuid: &str) -> UpbitApiResult {
 
         let _d = json!({
             "uuid": uuid,
@@ -135,7 +135,7 @@ impl Upbit {
 
     }
 
-    pub async fn orders(&self, uuids: Vec<String>) -> UpbitApiResult {
+    pub async fn orders(&self, uuids: Vec<&str>) -> UpbitApiResult {
 
         let _d = json!({
             "uuids": uuids,
@@ -145,7 +145,7 @@ impl Upbit {
 
     }
 
-    pub async fn cancel_order(&self, uuid: String) -> UpbitApiResult {
+    pub async fn cancel_order(&self, uuid: &str) -> UpbitApiResult {
 
         let _d = json!({
             "uuid": uuid,
@@ -155,7 +155,7 @@ impl Upbit {
 
     }
 
-    pub async fn request_order(&self, market: String, side: String, volume: u64, price: u64, ord_type: String) -> UpbitApiResult {
+    pub async fn request_order(&self, market: &str, side: &str, volume: u64, price: u64, ord_type: &str) -> UpbitApiResult {
 
         let _d = json!({
             "market": market,
@@ -179,7 +179,7 @@ impl Upbit {
 
     }
 
-    pub async fn candles_minutes(&self, unit: u8, market: String, count: u32) -> UpbitApiResult {
+    pub async fn candles_minutes(&self, unit: u8, market: &str, count: u32) -> UpbitApiResult {
 
         let _d = json!({
             "market": market,
@@ -191,7 +191,7 @@ impl Upbit {
 
     }
 
-    pub async fn candles_days(&self, market: String, count: u32) -> UpbitApiResult {
+    pub async fn candles_days(&self, market: &str, count: u32) -> UpbitApiResult {
 
         let _d = json!({
             "market": market,
@@ -202,7 +202,7 @@ impl Upbit {
 
     }
 
-    pub async fn candles_weeks(&self, market: String, count: u32) -> UpbitApiResult {
+    pub async fn candles_weeks(&self, market: &str, count: u32) -> UpbitApiResult {
 
         let _d = json!({
             "market": market,
@@ -213,7 +213,7 @@ impl Upbit {
 
     }
 
-    pub async fn candles_months(&self, market: String, count: u32) -> UpbitApiResult {
+    pub async fn candles_months(&self, market: &str, count: u32) -> UpbitApiResult {
 
         let _d = json!({
             "market": market,
@@ -224,7 +224,7 @@ impl Upbit {
 
     }
 
-    pub async fn trades(&self, market: String, count: u32) -> UpbitApiResult {
+    pub async fn trades(&self, market: &str, count: u32) -> UpbitApiResult {
 
         let _d = json!({
             "market": market,
@@ -235,7 +235,7 @@ impl Upbit {
 
     }
 
-    pub async fn ticker(&self, markets: Vec<String>) -> UpbitApiResult {
+    pub async fn ticker(&self, markets: Vec<&str>) -> UpbitApiResult {
 
         let _d = json!({
             "markets": markets.join(","),
@@ -245,7 +245,7 @@ impl Upbit {
 
     }
 
-    pub async fn orderbook(&self, markets: Vec<String>) -> UpbitApiResult {
+    pub async fn orderbook(&self, markets: Vec<&str>) -> UpbitApiResult {
 
         let _d = json!({
             "markets": markets.join(","),
